@@ -58,9 +58,8 @@ app.post('/auth', function(request, response) {
 });
 
 app.get('/get_from_db',function(req,res){
-        connection.query("SELECT * from accounts",function(error, results, rows, fields){
-          for (var i = 0; i < results.length; i++) 
-          res.json({"alive":"yes"});
+        connection.query("SELECT * from accounts",function(err,rows){
+          res.json(rows[0]);
         });
 });
 

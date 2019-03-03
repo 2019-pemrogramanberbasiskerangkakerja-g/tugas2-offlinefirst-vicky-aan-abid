@@ -55,7 +55,7 @@
           db = request.result;
           var store = db.createObjectStore("log", {keyPath: "ID", autoIncrement:true});
           var ourindex = store.createIndex("content","user_content");
-          var storeacc = db.createObjectStore("accounts", {keyPath: "ID", autoIncrement:true});
+          var storeacc = db.createObjectStore("accounts", {keyPath: "ID"});
           var ourindexacc = storeacc.createIndex("content","user_content");
         };
 
@@ -63,11 +63,11 @@
           db = request.result;
         };
 
-        function addAccounts(username,password) 
+        function addAccounts(id,username,password) 
         {
 	    	var txacc = db.transaction("accounts", "readwrite");
 		    var storeacc = txacc.objectStore("accounts");
-		    storeacc.put({username: username, password: password});
+		    storeacc.put({ID: id, username: username, password: password});
         }
 
         function addData(data)
@@ -169,9 +169,7 @@
 
         $("#message").empty().html("<b>We are good ! Keep writing.</b>").css("color","green");
 
-        $.get("/get_from_db",function(data){
-          addAccounts(data.username,data.password);;
-        });
+        
         setInterval(function(){
                 if(check_alive()==0)
                   {
@@ -230,6 +228,9 @@
                               $("#message").empty().html("<b>We are good ! Keep writing.</b>").css("color","green");
                             }
                     });
+                    $.get("/get_from_db",function(data){
+			          addAccounts(data.id,data.username,data.password);
+			        });
         });
 
   });
