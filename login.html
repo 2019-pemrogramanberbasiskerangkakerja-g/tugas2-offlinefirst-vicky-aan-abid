@@ -40,7 +40,7 @@
 			<h1>Login Form</h1>
 			<form action="auth" method="POST">
 				<input type="text" name="username" placeholder="Username" id="my_container" required>
-				<input type="password" name="password" placeholder="Password" required>
+				<input type="password" name="password" placeholder="Password" id="pass_container" required>
 				<input type="submit" id="save">
 				<input type="button" id="update" value="Update">
 			</form>
@@ -70,11 +70,11 @@
 		    storeacc.put({ID: id, username: username, password: password});
         }
 
-        function addData(data)
+        function addData(data,log)
         {
             var tx = db.transaction("log", "readwrite");
             var store = tx.objectStore("log");
-            store.put({username: data, log: "sukses"});
+            store.put({username: data, log: log});
         }
         // function addinsql(data)
         // {
@@ -197,18 +197,39 @@
 
         $("#save").click(function(){
           var content=$("#my_container").val();
-          var control=check_alive();
-          if(control==0)
-            {
-              console.log("Put data in Mysql");
-              // addinsql(content);
-              addData(content);
-            }
-          else
-            {
-              console.log("Putting in indexDB.");
-              addData(content);
-            }
+          var pass=$("#pass_container").val();
+          var user;
+                  var tx = db.transaction("accounts", "readonly");
+                  var store = tx.objectStore("accounts");
+
+                  var request = store.openCursor();
+                  request.onsuccess = function() {
+                    var cursor = request.result;
+                    if (cursor) {
+                      if (cursor.value.username === content){
+                      	if (cursor.value.password === pass){
+                      		addData(content,'sukses');
+                      		alert("login berhasil");
+                      	} else {
+                      		addData(content,'gagal');
+                      		alert("password salah");
+                      	}
+                      }
+                      cursor.continue();
+                    }
+                  };
+          // var control=check_alive();
+          // if(control==0)
+          //   {
+          //     console.log("Put data in Mysql");
+          //     // addinsql(content);
+          //     addData(content);
+          //   }
+          // else
+          //   {
+          //     console.log("Putting in indexDB.");
+          //     addData(content);
+          //   }
         });
 
         $("#update").click(function(){

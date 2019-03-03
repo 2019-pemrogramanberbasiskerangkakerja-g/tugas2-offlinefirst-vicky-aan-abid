@@ -33,29 +33,29 @@ app.get('/', function(request, response) {
 	response.sendFile(path.join(__dirname + '/login.html'));
 });
 
-app.post('/auth', function(request, response) {
-	var username = request.body.username;
-	var password = request.body.password;
-	if (username && password) {
-		connection.query('SELECT * FROM accounts WHERE username = ? AND password = ?', [username, password], function(error, results, fields) {
-			if (results.length > 0) {
+// app.post('/auth', function(request, response) {
+// 	var username = request.body.username;
+// 	var password = request.body.password;
+// 	if (username && password) {
+// 		connection.query('SELECT * FROM accounts WHERE username = ? AND password = ?', [username, password], function(error, results, fields) {
+// 			if (results.length > 0) {
 				
-				request.session.loggedin = true;
-				request.session.username = username;
-				response.send('Sukses!');
-				// response.redirect('/home');
-			} else {
+// 				request.session.loggedin = true;
+// 				request.session.username = username;
+// 				response.send('Sukses!');
+// 				// response.redirect('/home');
+// 			} else {
 				
-				response.send('Gagal!');
-			}			
-			response.end();
-		});
+// 				response.send('Gagal!');
+// 			}			
+// 			response.end();
+// 		});
 
-	} else {
-		response.send('Please enter Username and Password!');
-		response.end();
-	}
-});
+// 	} else {
+// 		response.send('Please enter Username and Password!');
+// 		response.end();
+// 	}
+// });
 
 app.get('/get_from_db',function(req,res){
         connection.query("SELECT * from accounts order by id desc",function(err,results){
