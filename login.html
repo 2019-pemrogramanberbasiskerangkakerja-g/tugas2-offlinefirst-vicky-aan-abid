@@ -42,6 +42,7 @@
 				<input type="text" name="username" placeholder="Username" id="my_container" required>
 				<input type="password" name="password" placeholder="Password" required>
 				<input type="submit" id="save">
+				<input type="button" id="update" value="Update">
 			</form>
 		</div>
 	</body>
@@ -62,11 +63,11 @@
           db = request.result;
         };
 
-        function addAccounts(data)
+        function addAccounts(username,password) 
         {
-        	var txacc = db.transaction("accounts", "readwrite");
+	    	var txacc = db.transaction("accounts", "readwrite");
 		    var storeacc = txacc.objectStore("accounts");
-		    storeacc.put({username: data, password: "password"});
+		    storeacc.put({username: username, password: password});
         }
 
         function addData(data)
@@ -75,19 +76,19 @@
             var store = tx.objectStore("log");
             store.put({username: data, log: "sukses"});
         }
-        function addinsql(data)
-        {
-          $.get("/update?data="+data,function(data){
-            if(data.yes==1)
-              {
-                alert("data updated");
-              }
-            else
-              {
-                alert("error");
-              }
-          });
-        }
+        // function addinsql(data)
+        // {
+        //   $.get("/update?data="+data,function(data){
+        //     if(data.yes==1)
+        //       {
+        //         alert("data updated");
+        //       }
+        //     else
+        //       {
+        //         alert("error");
+        //       }
+        //   });
+        // }
         function check_alive(){
             var a;
             $.ajax({
@@ -106,9 +107,9 @@
             });
             return a;
         }
-        function getalldata()
+        function getiddata()
         {
-                  var all_content;
+                  var ID;
                   var self=this;
                   var tx = db.transaction("log", "readonly");
                   var store = tx.objectStore("log");
@@ -117,26 +118,59 @@
                   request.onsuccess = function() {
                     var cursor = request.result;
                     if (cursor) {
-                      self.all_content=cursor.value.content;
+                      self.ID=cursor.value.ID;
                       cursor.continue();
                     }
                   };
-              return self.all_content;
+              return self.ID;
+        }
+        function getuserdata()
+        {
+                  var user;
+                  var self=this;
+                  var tx = db.transaction("log", "readonly");
+                  var store = tx.objectStore("log");
+
+                  var request = store.openCursor();
+                  request.onsuccess = function() {
+                    var cursor = request.result;
+                    if (cursor) {
+                      self.user=cursor.value.username;
+                      cursor.continue();
+                    }
+                  };
+              return self.user;
+        }
+        function getlogdata()
+        {
+                  var log
+                  var self=this;
+                  var tx = db.transaction("log", "readonly");
+                  var store = tx.objectStore("log");
+
+                  var request = store.openCursor();
+                  request.onsuccess = function() {
+                    var cursor = request.result;
+                    if (cursor) {
+                      self.log=cursor.value.log;
+                      cursor.continue();
+                    }
+                  };
+              return self.log;
         }
   </script>
   <script>
   $(document).ready(function(){
+		// connection.query('SELECT * FROM accounts', function(error, results, fields) {
+		// 	for (var i = 0; i < results.length; i++) {
+		//     addAccounts(results[i].username);
+		// }
+		// }
 
-		connection.query('SELECT * FROM accounts', function(error, results, fields) {
-			for (var i = 0; i < results.length; i++) {
-		    addAccounts(results[i].username);
-		}
-		}
-		
         $("#message").empty().html("<b>We are good ! Keep writing.</b>").css("color","green");
 
         $.get("/get_from_db",function(data){
-          $("#my_container").val(data.content);
+          addAccounts(data.username,data.password);;
         });
         setInterval(function(){
                 if(check_alive()==0)
@@ -144,18 +178,18 @@
                     $("#message").empty().html("<b>We are good ! Keep writing.</b>").css("color","green");
                     //get all data from indexDB and update it in MySQL.
                     $("#message").empty().html("<b>Syncing...</b>").css("color","green");
-                    var c2=getalldata();
-                    console.log(c2);
-                    $.get('/update?data='+c2,function(data){
-                        if(data.error==1)
-                          {
-                            console.log("Some issue.");
-                          }
-                          else
-                            {
-                              $("#message").empty().html("<b>We are good ! Keep writing.</b>").css("color","green");
-                            }
-                    });
+                    // var c2=getalldata();
+                    // console.log(c2);
+                    // $.get('/update?data='+c2,function(data){
+                    //     if(data.error==1)
+                    //       {
+                    //         console.log("Some issue.");
+                    //       }
+                    //       else
+                    //         {
+                    //           $("#message").empty().html("<b>We are good ! Keep writing.</b>").css("color","green");
+                    //         }
+                    // });
                   }
                 else
                   {
@@ -169,7 +203,7 @@
           if(control==0)
             {
               console.log("Put data in Mysql");
-              addinsql(content);
+              // addinsql(content);
               addData(content);
             }
           else
@@ -177,6 +211,25 @@
               console.log("Putting in indexDB.");
               addData(content);
             }
+        });
+
+        $("#update").click(function(){
+          var c1=getiddata();
+          var c2=getuserdata();
+          var c3=getlogdata();
+          			console.log(c1);
+                    console.log(c2);
+                    console.log(c3);
+                    $.get('/update?id='+c1+'&data='+c2+'&log='+c3,function(data){
+                        if(data.error==1)
+                          {
+                            console.log("Some issue.");
+                          }
+                          else
+                            {
+                              $("#message").empty().html("<b>We are good ! Keep writing.</b>").css("color","green");
+                            }
+                    });
         });
 
   });
