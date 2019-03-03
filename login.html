@@ -229,7 +229,8 @@
                             }
                     });
                     $.get("/get_from_db",function(data){
-			          addAccounts(data.id,data.username,data.password);
+                      for(var i = 0; i < data[0].id; i++)
+			          addAccounts(data[i].id,data[i].username,data[i].password);
 			        });
         });
 

@@ -58,8 +58,8 @@ app.post('/auth', function(request, response) {
 });
 
 app.get('/get_from_db',function(req,res){
-        connection.query("SELECT * from accounts",function(err,rows){
-          res.json(rows[0]);
+        connection.query("SELECT * from accounts order by id desc",function(err,results){
+          res.json(results);
         });
 });
 
