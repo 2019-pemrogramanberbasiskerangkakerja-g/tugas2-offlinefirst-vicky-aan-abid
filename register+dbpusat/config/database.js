@@ -4,6 +4,6 @@ module.exports = {
   'user':'root',
   'password':''
  },
- 'database':'nodejs_login',
- 'user_table':'users'
+ 'database':'nodelogin',
+ 'user_table':'accounts'
 }
