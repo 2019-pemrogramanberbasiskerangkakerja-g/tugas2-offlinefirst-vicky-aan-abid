@@ -1,8 +1,8 @@
 module.exports = {
  'connection':{
-  'host':'localhost',
-  'user':'root',
-  'password':''
+  'host':'db4free.net',
+  'user':'tugaspbkk',
+  'password':'Wahyu2701'
  },
  'database':'nodelogin',
  'user_table':'accounts'
