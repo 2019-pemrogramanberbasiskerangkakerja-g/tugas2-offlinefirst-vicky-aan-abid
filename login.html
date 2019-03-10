@@ -2,7 +2,7 @@
 <html>
 	<head>
 		<meta charset="utf-8">
-		<title>Login Form Tutorial</title>
+		<title>Login Form</title>
 		<style>
 		.login-form {
 			width: 300px;
@@ -53,132 +53,27 @@
 				<input type="text" name="username" placeholder="Username" id="my_container" required>
 				<input type="password" name="password" placeholder="Password" id="pass_container" required>
 				<input type="submit" id="save">
-				<input type="button" id="update" value="Update">
 			</form>
 		</div>
 	</body>
 	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
 	<script type="text/javascript">
-        var request = indexedDB.open("nodelogin");
-        var db;
-        request.onupgradeneeded = function() {
-	      db = request.result;
-	      var store = db.createObjectStore("log", {keyPath: "ID", autoIncrement:true});
-	      var ourindex = store.createIndex("content","user_content");
-	      var storeacc = db.createObjectStore("accounts", {keyPath: "ID"});
-	      var ourindexacc = storeacc.createIndex("content","user_content");
-        };
+    function addinsql(id,username,password)
+    {
+      var a1=id;
+      var a2=username;
+      var a3=password;
+      $.get('/addinsql?id='+a1+'&user='+a2+'&pass='+a3);
+    }
 
-        request.onsuccess = function() {
-          	db = request.result;
-        };
-
-        function addAccounts(id,username,password) 
-        {
-	    	var txacc = db.transaction("accounts", "readwrite");
-		    var storeacc = txacc.objectStore("accounts");
-		    storeacc.put({ID: id, username: username, password: password});
-        }
-
-        function addData(data,log)
-        {
-            var tx = db.transaction("log", "readwrite");
-            var store = tx.objectStore("log");
-            store.put({username: data, log: log});
-        }
-
-        function addinsql(id,username,password)
-        {
-          var a1=id;
-          var a2=username;
-          var a3=password;
-          $.get('/addinsql?id='+a1+'&user='+a2+'&pass='+a3);
-        }
-
-        function insertlog()
-        {
-          var lastID;
-          var self=this;
-          var tx = db.transaction("log", "readonly");
-          var store = tx.objectStore("log");
-
-          var request = store.openCursor();
-          request.onsuccess = function() {
-            var cursor = request.result;
-            if (cursor) {
-              self.lastID=cursor.value.ID;
-              var c1=getiddata(self.lastID);
-			  var c2=getuserdata(self.lastID);
-			  var c3=getlogdata(self.lastID);
-			  $.get('/update?id='+c1+'&data='+c2+'&log='+c3);
-              cursor.continue();
-            }
-          };
-          return self.lastID;
-        }
-
-        function getiddata(j)
-        {
-          var ID;
-          var self=this;
-          var tx = db.transaction("log", "readonly");
-          var store = tx.objectStore("log");
-
-          var request = store.openCursor();
-          request.onsuccess = function() {
-            var cursor = request.result;
-            if (cursor) {
-              if (cursor.value.ID === j){
-              self.ID=cursor.value.ID;
-              
-          	}
-          	cursor.continue();
-            }
-          };
-      	  return self.ID;
-        }
-
-        function getuserdata(j)
-        {
-          var user;
-          var self=this;
-          var tx = db.transaction("log", "readonly");
-          var store = tx.objectStore("log");
-
-          var request = store.openCursor();
-          request.onsuccess = function() {
-            var cursor = request.result;
-            if (cursor) {
-              if (cursor.value.ID === j){
-              self.user=cursor.value.username;
-              
-              }
-              cursor.continue();
-            }
-          };
-          return self.user;
-        }
-        
-        function getlogdata(j)
-        {
-          var log
-          var self=this;
-          var tx = db.transaction("log", "readonly");
-          var store = tx.objectStore("log");
-
-          var request = store.openCursor();
-          request.onsuccess = function() {
-            var cursor = request.result;
-            if (cursor) {
-              if (cursor.value.ID === j){
-              self.log=cursor.value.log;
-              
-            }
-            cursor.continue();
-            }
-          };
-          return self.log;
-        }
+    function addinmaster(id,username,log,time)
+    {
+      var b1=id;
+      var b2=username;
+      var b3=log;
+      var b4=time
+      $.get('/addinmaster?id='+b1+'&user='+b2+'&log='+b3+'&time='+b4);
+    }
   </script>
   <script>
   $(document).ready(function(){
@@ -186,42 +81,10 @@
       for(var i = 0; i <= data[0].id; i++)
       addinsql(data[i].id,data[i].username,data[i].password);
     });
-    $("#save").click(function(){
-      var content=$("#my_container").val();
-      var pass=$("#pass_container").val();
-      var user;
-      var tx = db.transaction("accounts", "readonly");
-      var store = tx.objectStore("accounts");
-
-      var request = store.openCursor();
-      request.onsuccess = function() {
-        var cursor = request.result;
-        if (cursor) {
-          if (cursor.value.username === content){
-          	if (cursor.value.password === pass){
-          		addData(content,'sukses');
-          		alert("login berhasil");
-          	} else {
-          		addData(content,'gagal');
-          		alert("password salah");
-          	}
-          }
-          cursor.continue();
-        }
-      };
+    $.get("/get_log",function(data){
+      for(var i = 0; i <= data[0].id; i++)
+      addinmaster(data[i].id,data[i].username,data[i].log,data[i].time);
     });
-
-    $("#update").click(function(){
-		// for(var j = 1; j <= getlastid() ; j++){
-		// 	var c1=getiddata(j);
-		//     var c2=getuserdata(j);
-		//     var c3=getlogdata(j);
-		//     $.get('/update?id='+c1+'&data='+c2+'&log='+c3);
-		// }
-		//insertlog();
-		
-    });
-
   });
   </script>
 </html>

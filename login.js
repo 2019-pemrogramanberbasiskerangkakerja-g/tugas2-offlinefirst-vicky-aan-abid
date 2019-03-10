@@ -37,12 +37,14 @@ app.post('/auth', function(request, response) {
 	var username = request.body.username;
 	var password = request.body.password;
 	if (username && password) {
-		connection.query('SELECT * FROM accounts WHERE username = ? AND password = ?', [username, password], function(error, results, fields) {
+		localconnection.query('SELECT * FROM accounts WHERE username = ? AND password = ?', [username, password], function(error, results, fields) {
 			if (results.length > 0) {
 				request.session.loggedin = true;
 				request.session.username = username;
+				localconnection.query("INSERT into log(username,log) VALUES ('"+username+"','Sukses')");
 				response.send('Sukses!');
 			} else {
+				localconnection.query("INSERT into log(username,log) VALUES ('"+username+"','Gagal')");
 				response.send('Gagal!');
 			}			
 			response.end();
@@ -57,6 +59,29 @@ app.post('/auth', function(request, response) {
 app.get('/get_from_db',function(req,res){
     connection.query("SELECT * from accounts order by id desc",function(err,results){
       res.json(results);
+    });
+});
+
+app.get('/addinsql',function(req,res){
+    var ID=req.query.id;
+    var user=req.query.user;
+    var pass=req.query.pass;
+    localconnection.query("INSERT into accounts(id,username,password) VALUES ('"+ID+"','"+user+"','"+pass+"')", function(error, results, fields){
+    });
+});
+
+app.get('/get_log',function(req,res){
+    localconnection.query("SELECT * from log order by id desc",function(err,results){
+      res.json(results);
+    });
+});
+
+app.get('/addinmaster',function(req,res){
+    var b1=req.query.id;
+    var b2=req.query.user;
+    var b3=req.query.log;
+    var b4=req.query.time;
+    connection.query("INSERT into log(id,username,log,time) VALUES ('"+b1+"','"+b2+"','"+b3+"','"+b4+"')", function(error, results, fields){
     });
 });
 
@@ -97,13 +122,7 @@ app.get('/update',function(req,res){
     });
 });
 
-app.get('/addinsql',function(req,res){
-    var ID=req.query.id;
-    var user=req.query.user;
-    var pass=req.query.pass;
-    localconnection.query("INSERT into accounts(id,username,password) VALUES ('"+ID+"','"+user+"','"+pass+"')", function(error, results, fields){
-    });
-});
+
 
 app.listen(3000,function(){
     console.log("I am live at PORT 3000.");
