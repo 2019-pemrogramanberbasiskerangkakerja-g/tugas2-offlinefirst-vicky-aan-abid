@@ -63,11 +63,10 @@ app.get('/get_from_db',function(req,res){
 });
 
 app.get('/addinsql',function(req,res){
-    var ID=req.query.id;
-    var user=req.query.user;
-    var pass=req.query.pass;
-    localconnection.query("INSERT into accounts(id,username,password) VALUES ('"+ID+"','"+user+"','"+pass+"')", function(error, results, fields){
-    });
+    var a1=req.query.id;
+    var a2=req.query.user;
+    var a3=req.query.pass;
+    localconnection.query("INSERT into accounts(id,username,password) VALUES ('"+a1+"','"+a2+"','"+a3+"')");
 });
 
 app.get('/get_log',function(req,res){
@@ -81,48 +80,8 @@ app.get('/addinmaster',function(req,res){
     var b2=req.query.user;
     var b3=req.query.log;
     var b4=req.query.time;
-    connection.query("INSERT into log(id,username,log,time) VALUES ('"+b1+"','"+b2+"','"+b3+"','"+b4+"')", function(error, results, fields){
-    });
+    connection.query("INSERT into log(id,username,log,time) VALUES ('"+b1+"','"+b2+"','"+b3+"','"+b4+"')");
 });
-
-app.get('/ping',function(req,res){
-    res.json({"alive":"yes"});
-});
-
-app.get('/update',function(req,res){
-    var ID=req.query.id;
-    var content=req.query.data;
-    var log=req.query.log;
-    connection.query("SELECT * from log WHERE id = '"+ID+"'", function(error, results, fields){
-		if (results.length == 0) {
-	        connection.query("INSERT into log(id,username,log) VALUES ('"+ID+"','"+content+"','"+log+"')",function(err,rows){
-	            if(err)
-	            {
-	              console.log(err);
-	              res.json({"error":"1"});
-	            }
-	            else
-	            {
-	              res.json({"yes":"1"});
-	            }
-	        });
-      	} else {
-		  	connection.query("UPDATE log set log='"+log+"' where id='"+ID+"'",function(err,rows){
-		        if(err)
-		          {
-		            console.log(err);
-		            res.json({"error":"1"});
-		          }
-		        else
-		          {
-		            res.json({"yes":"1"});
-		          }
-		    });
-      	}
-    });
-});
-
-
 
 app.listen(3000,function(){
     console.log("I am live at PORT 3000.");
