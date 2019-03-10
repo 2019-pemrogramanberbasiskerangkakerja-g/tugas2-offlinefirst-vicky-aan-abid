@@ -5,6 +5,12 @@ var bodyParser = require('body-parser');
 var path = require('path');
 
 var connection = mysql.createConnection({
+	host     : 'db4free.net',
+	user     : 'tugaspbkk',
+	password : 'Wahyu2701',
+	database : 'nodelogin'
+});
+var localconnection = mysql.createConnection({
 	host     : 'localhost',
 	user     : 'root',
 	password : '',
@@ -12,6 +18,7 @@ var connection = mysql.createConnection({
 });
 
 connection.connect();
+localconnection.connect();
 
 var app = express();
 app.use(session({
@@ -87,6 +94,14 @@ app.get('/update',function(req,res){
 		          }
 		    });
       	}
+    });
+});
+
+app.get('/addinsql',function(req,res){
+    var ID=req.query.id;
+    var user=req.query.user;
+    var pass=req.query.pass;
+    localconnection.query("INSERT into accounts(id,username,password) VALUES ('"+ID+"','"+user+"','"+pass+"')", function(error, results, fields){
     });
 });
 

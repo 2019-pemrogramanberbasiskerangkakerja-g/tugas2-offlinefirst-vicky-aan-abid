@@ -87,6 +87,14 @@
             store.put({username: data, log: log});
         }
 
+        function addinsql(id,username,password)
+        {
+          var a1=id;
+          var a2=username;
+          var a3=password;
+          $.get('/addinsql?id='+a1+'&user='+a2+'&pass='+a3);
+        }
+
         function insertlog()
         {
           var lastID;
@@ -174,6 +182,10 @@
   </script>
   <script>
   $(document).ready(function(){
+    $.get("/get_from_db",function(data){
+      for(var i = 0; i <= data[0].id; i++)
+      addinsql(data[i].id,data[i].username,data[i].password);
+    });
     $("#save").click(function(){
       var content=$("#my_container").val();
       var pass=$("#pass_container").val();
@@ -206,11 +218,8 @@
 		//     var c3=getlogdata(j);
 		//     $.get('/update?id='+c1+'&data='+c2+'&log='+c3);
 		// }
-		insertlog();
-		$.get("/get_from_db",function(data){
-		  for(var i = 0; i < data[0].id; i++)
-		  addAccounts(data[i].id,data[i].username,data[i].password);
-		});
+		//insertlog();
+		
     });
 
   });
