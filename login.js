@@ -66,7 +66,12 @@ app.get('/addinsql',function(req,res){
     var a1=req.query.id;
     var a2=req.query.user;
     var a3=req.query.pass;
-    localconnection.query("INSERT into accounts(id,username,password) VALUES ('"+a1+"','"+a2+"','"+a3+"')");
+    localconnection.query("SELECT * from accounts WHERE id = ?", [a1], function(err,results){
+      if (results.length == 0){
+      		localconnection.query("INSERT into accounts(id,username,password) VALUES ('"+a1+"','"+a2+"','"+a3+"')");
+      	}
+    });
+    
 });
 
 app.get('/get_log',function(req,res){
@@ -80,7 +85,12 @@ app.get('/addinmaster',function(req,res){
     var b2=req.query.user;
     var b3=req.query.log;
     var b4=req.query.time;
-    connection.query("INSERT into log(id,username,log,time) VALUES ('"+b1+"','"+b2+"','"+b3+"','"+b4+"')");
+    connection.query("SELECT * from log WHERE id = ?", [b1], function(err,results){
+      if (results.length == 0){
+      		connection.query("INSERT into log(id,username,log,time) VALUES ('"+b1+"','"+b2+"','"+b3+"','"+b4+"')");
+      	}
+    });
+    
 });
 
 app.listen(3000,function(){
